@@ -7,11 +7,13 @@ import re
 import keyboard
 import os
 
-# --- CONFIGURACIÓN ---
+# --- CONFIGURACIÓN DE USUARIO ---
 DEBUG_MODE = False
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe' 
 MONITOR_NUMBER = 1
 CHAT_BOX_COORDS = {"top": 550, "left": 1460, "width": 395, "height": 250}
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+# --- LISTA DE OBJETOS A RASTREAR ---
 ITEMS_TO_TRACK = {
     "Bulto de brana endurecido": {"count": 0, "silver_value": 17000},
     "Cristal oscuro sellado":    {"count": 0, "silver_value": 11800},
@@ -24,7 +26,6 @@ ITEMS_TO_TRACK = {
     "Resto de naturaleza":       {"count": 0, "silver_value": 500}
 }
 LOOT_MESSAGE_KEYWORD = "Has obtenido"
-# --- FIN DE LA CONFIGURACIÓN ---
 
 def clear_console():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -35,8 +36,7 @@ def process_image(img):
     thresh = cv2.adaptiveThreshold(gray, 255, 
                                    cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
                                    cv2.THRESH_BINARY_INV, 
-                                   11, 
-                                   4)
+                                   11, 4)
     kernel = np.ones((1, 1), np.uint8)
     thresh = cv2.erode(thresh, kernel, iterations=1)
     thresh = cv2.dilate(thresh, kernel, iterations=1)
@@ -44,7 +44,7 @@ def process_image(img):
 
 def print_summary(items_data):
     clear_console()
-    print(" BDO Loot Tracker by Gemini ")
+    print(" BDO Loot Tracker")
     print("=" * 60)
     print(f"{'Objeto':<35} | {'Cantidad':>10} | {'Valor (Platas)':>15}")
     print("-" * 60)
@@ -57,34 +57,27 @@ def print_summary(items_data):
     print("-" * 60)
     print(f"{'VALOR TOTAL ACUMULADO:':<48} | {grand_total_silver:>15,}")
     print("=" * 60)
-    print(f"\nMonitoreando el botín en el MONITOR {MONITOR_NUMBER}... (Presiona 'q' para salir)")
+    print(f"\nMonitoreando en MONITOR {MONITOR_NUMBER}... (Presiona 'q' para salir)")
 
-# --- FUNCIÓN MODIFICADA ---
-def parse_new_lines(new_lines, items_data):
-    """
-    Esta función ahora solo procesa las líneas que se le pasan,
-    asumiendo que ya son nuevas y únicas.
-    """
-    updated = False
-    for line in new_lines:
+def get_canonical_loot_tags(text_block, items_to_track):
+    canonical_tags = []
+    lines = text_block.split('\n')
+    for line in lines:
         if LOOT_MESSAGE_KEYWORD in line:
-            for item_name in items_data.keys():
+            for item_name in items_to_track.keys():
                 if item_name in line:
                     quantity = 1
                     match = re.search(r'x(\d+)', line)
                     if match:
                         quantity = int(match.group(1))
                     
-                    items_data[item_name]['count'] += quantity
-                    updated = True
-                    print(f"✔️ Detectado: {line}")
-                    break 
-    return updated
+                    canonical_tags.append(f"{item_name}|{quantity}")
+                    break
+    return canonical_tags
 
 def main():
-    # Esta variable guardará el texto del ciclo anterior.
-    last_text_block = ""
-    print("🚀 Iniciando BDO Loot Tracker...")
+    last_canonical_tags = set()
+    print("Iniciando BDO Loot Tracker...")
     print(f"Asegúrate de que el juego esté activo en el monitor {MONITOR_NUMBER}.")
     time.sleep(2)
     print_summary(ITEMS_TO_TRACK)
@@ -93,7 +86,7 @@ def main():
         try:
             target_monitor = sct.monitors[MONITOR_NUMBER]
         except IndexError:
-            print(f"🚨 ERROR: ¡El monitor número {MONITOR_NUMBER} no existe!")
+            print(f"ERROR: El monitor número {MONITOR_NUMBER} no existe.")
             return
         
         capture_coords = {
@@ -105,7 +98,7 @@ def main():
 
         while True:
             if keyboard.is_pressed('q'):
-                print("\n🛑 Deteniendo el script...")
+                print("\nDeteniendo el script...")
                 break
 
             screenshot_img = sct.grab(capture_coords)
@@ -113,25 +106,26 @@ def main():
             processed_img_np = process_image(img_np)
             current_text_block = pytesseract.image_to_string(processed_img_np, lang='spa').strip()
 
-            # --- LÓGICA DE DETECCIÓN DE CAMBIOS ---
-            # Solo continuamos si el texto actual es diferente al del ciclo anterior
-            if current_text_block != last_text_block:
-                
-                # Convertimos los bloques de texto en conjuntos de líneas para compararlos
-                last_lines = set(last_text_block.split('\n'))
-                current_lines = set(current_text_block.split('\n'))
-                
-                # Calculamos las líneas que están en el texto actual pero no en el anterior
-                new_lines = current_lines - last_lines
-                
-                # Si hay líneas nuevas, las procesamos
-                if new_lines:
-                    if parse_new_lines(new_lines, ITEMS_TO_TRACK):
-                        print_summary(ITEMS_TO_TRACK)
-                
-                # Actualizamos el texto anterior para el próximo ciclo
-                last_text_block = current_text_block
+            current_canonical_tags = set(get_canonical_loot_tags(current_text_block, ITEMS_TO_TRACK))
+            new_loot = current_canonical_tags - last_canonical_tags
             
+            if new_loot:
+                updated = False
+                for tag in new_loot:
+                    try:
+                        item_name, quantity_str = tag.split('|')
+                        quantity = int(quantity_str)
+                        
+                        if item_name in ITEMS_TO_TRACK:
+                            ITEMS_TO_TRACK[item_name]['count'] += quantity
+                            updated = True
+                    except ValueError:
+                        continue
+                
+                if updated:
+                    print_summary(ITEMS_TO_TRACK)
+
+            last_canonical_tags = current_canonical_tags
             time.sleep(1.5)
 
     print("\n--- RESUMEN FINAL DE LA SESIÓN ---")
