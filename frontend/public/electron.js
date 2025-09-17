@@ -6,7 +6,7 @@ function createWindow() {
   // Configuración de la ventana del overlay
   const win = new BrowserWindow({
     width: 350,       // Ancho del overlay
-    height: 150,      // Alto del overlay
+    height: 250,      // Alto del overlay
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,

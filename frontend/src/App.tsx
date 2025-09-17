@@ -1,4 +1,3 @@
-// frontend/src/App.tsx
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import './App.css';
@@ -31,7 +30,6 @@ function App() {
 
   return (
     <div className="overlay-container">
-      {/* Esta es la nueva barra para arrastrar la ventana */}
       <div className="title-bar">
         BDO Loot Tracker
       </div>
