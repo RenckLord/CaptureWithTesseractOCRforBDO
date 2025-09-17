@@ -2,7 +2,9 @@
 
 Este proyecto es una herramienta de superposición (overlay) para el juego Black Desert Online que rastrea automáticamente el botín obtenido y el tiempo de juego durante las sesiones de "grindeo". Utiliza captura de pantalla y reconocimiento óptico de caracteres (OCR) para leer el chat del juego y muestra un resumen en tiempo real en una interfaz personalizable.
 
-## ✨ Características Principales
+Solo rastrea para la zona de Fogans
+
+## Características Principales
 
 - **Overlay en Tiempo Real:** Muestra una ventana superpuesta no intrusiva y personalizable sobre el juego.
 - **Conteo Automático:** Detecta y cuenta automáticamente múltiples tipos de objetos y calcula el valor total en platas.
@@ -10,7 +12,7 @@ Este proyecto es una herramienta de superposición (overlay) para el juego Black
 - **Interfaz Personalizable:** El front-end está construido con React y CSS, permitiendo una personalización total del diseño.
 - **Arquitectura Cliente-Servidor:** Un back-end robusto en Python se encarga del procesamiento pesado, mientras que un front-end ligero en Electron/React muestra los datos.
 
-## ⚙️ ¿Cómo Funciona?
+##  ¿Cómo Funciona?
 
 El sistema se compone de dos programas que se comunican en tiempo real:
 
@@ -32,7 +34,7 @@ El sistema se compone de dos programas que se comunican en tiempo real:
     - **Interfaz de Usuario:** React renderiza la interfaz, mostrando los datos recibidos desde el back-end.
     - **Cliente WebSocket:** Se conecta al servidor de Python para recibir actualizaciones de datos en tiempo real.
 
-## 📋 Prerrequisitos
+## Prerrequisitos
 
 Asegúrate de tener el siguiente software instalado:
 
@@ -40,7 +42,7 @@ Asegúrate de tener el siguiente software instalado:
 - **Node.js y npm**
 - **Tesseract OCR Engine:** Descárgalo desde [UB-Mannheim/tesseract/wiki](https://github.com/UB-Mannheim/tesseract/wiki). Es crucial que la ruta de instalación esté correctamente configurada en el script de Python.
 
-## 🚀 Instalación y Configuración
+##  Instalación y Configuración
 
 1.  **Clona el repositorio:**
     ```bash
@@ -82,6 +84,3 @@ Para ejecutar la aplicación, necesitas tener dos terminales abiertas:
 
 El overlay aparecerá en tu pantalla y se actualizará automáticamente a medida que obtengas botín en el juego.
 
-## 🔮 Posible Alcance Futuro
-
-- Implementar un modelo de detección de objetos (como YOLO) para localizar las líneas de botín de forma más inteligente, eliminando la dependencia de coordenadas fijas y mejorando aún más la robustez del OCR.
