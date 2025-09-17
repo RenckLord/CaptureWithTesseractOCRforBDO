@@ -1,9 +1,9 @@
 .venv/
 __pycache__/
 
-# Archivos de depuración
-debug_capture.png
-debug_processed.png
+# Archivos de depuración en la carpeta raíz
+/debug_capture.png
+/debug_processed.png
 
 # Ignorar carpetas del backend (Python)
 backend/.venv/
