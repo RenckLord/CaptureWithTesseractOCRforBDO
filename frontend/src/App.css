@@ -1,0 +1,61 @@
+/* frontend/src/App.css */
+body {
+  background-color: transparent;
+  color: #e0e0e0; /* Un gris más suave que el blanco puro */
+  font-family: 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+  margin: 0;
+}
+
+.overlay-container {
+  /* Fondo con un gradiente sutil */
+  background: linear-gradient(145deg, rgba(30, 35, 45, 0.85), rgba(15, 20, 25, 0.9));
+  backdrop-filter: blur(5px); /* Efecto "vidrio esmerilado" (opcional, consume más recursos) */
+
+  /* Esta es la clave para la forma personalizada: un polígono con una esquina cortada */
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+
+  border: 1px solid rgba(130, 170, 255, 0.2);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  padding: 0;
+  overflow: hidden; /* Necesario para que el clip-path funcione bien */
+}
+
+.title-bar {
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 8px 12px;
+  font-size: 0.8em;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+
+  /* --- ESTA LÍNEA MÁGICA HACE QUE SE PUEDA ARRASTRAR --- */
+  -webkit-app-region: drag;
+}
+
+.stats-grid {
+  padding: 15px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.25em;
+}
+
+.label {
+  font-weight: 300;
+  font-size: 0.9em;
+  opacity: 0.8;
+}
+
+.value {
+  font-weight: 700;
+  font-size: 1.1em;
+  color: #a0c4ff;
+}

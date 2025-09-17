@@ -4,3 +4,11 @@ __pycache__/
 # Archivos de depuración
 debug_capture.png
 debug_processed.png
+
+# Ignorar carpetas del backend (Python)
+backend/.venv/
+backend/__pycache__/
+
+# Ignorar carpetas del frontend (Node.js)
+frontend/node_modules/
+frontend/build/
