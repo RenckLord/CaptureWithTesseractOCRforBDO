@@ -1,33 +1,35 @@
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
+const { app, BrowserWindow, ipcMain } = require("electron");
+const path = require("path");
+
+let win;
 
 function createWindow() {
-  const win = new BrowserWindow({
-    width: 350,       // Ancho 
-    height: 250,      // Alto 
+  win = new BrowserWindow({
+    width: 350,
+    height: 400,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
+      preload: path.join(__dirname, "preload.js"), 
     },
-    transparent: true, 
-    frame: false,      
-    alwaysOnTop: true, 
+    transparent: true,
+    frame: false,
+    alwaysOnTop: true,
     resizable: false,
     movable: true,
-    skipTaskbar: true, 
   });
-  
-  //win.setIgnoreMouseEvents(true);
 
-  // Carga la aplicación de React
-const startUrl = 'http://localhost:3000';
-  win.loadURL(startUrl);
+  win.loadURL("http://localhost:3000");
 }
 
-app.whenReady().then(createWindow);
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
+ipcMain.on("resize-window", (event, width, height) => {
+  if (win) {
+    const bounds = win.getBounds();
+    win.setBounds({
+      x: bounds.x,
+      y: bounds.y,
+      width,
+      height,
+    });
   }
 });
+
+app.whenReady().then(createWindow);
